@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Takis v1</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #0d1220;
+    --card: #161d33;
+    --border: #232c47;
+    --text: #eef2ff;
+    --muted: #8b93b0;
+    --green: #22c55e;
+    --red: #f43f5e;
+    --blue: #4f8cff;
+    --purple: #a855f7;
+  }
+
+  html { -webkit-text-size-adjust: 100%; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    padding: 18px 16px 60px;
+    max-width: 640px;
+    margin: 0 auto;
+    min-height: 100vh;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+
+  .brand { display: flex; align-items: center; gap: 10px; }
+
+  .logo {
+    width: 40px; height: 40px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--blue), var(--purple));
+    display: grid; place-items: center;
+    font-size: 19px;
+  }
+
+  .brand h1 { font-size: 1.05rem; font-weight: 800; }
+  .brand p { font-size: 0.68rem; color: var(--muted); margin-top: 2px; }
+
+  .badge {
+    font-size: 0.62rem;
+    padding: 5px 9px;
+    border-radius: 99px;
+    background: rgba(34,197,94,0.12);
+    color: var(--green);
+    border: 1px solid rgba(34,197,94,0.25);
+    font-weight: 600;
+  }
+
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-bottom: 18px;
+  }
+
+  .stat-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 12px 10px;
+  }
+
+  .stat-icon { font-size: 0.95rem; display: block; margin-bottom: 6px; }
+  .stat-label { font-size: 0.62rem; color: var(--muted); font-weight: 500; display: block; }
+  .stat-value {
+    font-size: 0.9rem;
+    font-weight: 800;
+    margin-top: 3px;
+    display: block;
+    letter-spacing: -0.2px;
+  }
+
+  .stat-card.s1 .stat-value { color: var(--green); }
+  .stat-card.s2 .stat-value { color: var(--red); }
+  .stat-card.s3 .stat-value { color: var(--blue); }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 18px;
+    margin-bottom: 18px;
+  }
+
+  .card-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    margin-bottom: 14px;
+  }
+
+  .card-title .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--blue);
+  }
+
+  .edit-indicator {
+    font-size: 0.65rem;
+    color: var(--blue);
+    margin-left: auto;
+    display: none;
+  }
+
+  label {
+    display: block;
+    font-size: 0.7rem;
+    color: var(--muted);
+    font-weight: 600;
+    margin: 12px 0 5px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+  }
+
+  input, select {
+    width: 100%;
+    padding: 11px 13px;
+    background: #0d1220;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text);
+    font-size: 0.9rem;
+    font-family: inherit;
+    outline: none;
+    transition: border-color .15s;
+    -webkit-appearance: none;
+  }
+
+  input::placeholder { color: #5a6285; }
+  input:focus, select:focus { border-color: var(--blue); }
+
+  select option { background: #161d33; }
+
+  .input-rupiah {
+    position: relative;
+  }
+
+  .input-rupiah .prefix {
+    position: absolute;
+    left: 13px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--muted);
+    font-size: 0.9rem;
+    font-weight: 600;
+    pointer-events: none;
+  }
+
+  .input-rupiah input {
+    padding-left: 38px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+  }
+
+  .toggle {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 5px;
+  }
+
+  .toggle input { display: none; }
+
+  .toggle label {
+    margin: 0;
+    padding: 11px;
+    text-align: center;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: #0d1220;
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: none;
+    letter-spacing: 0;
+    color: var(--muted);
+    cursor: pointer;
+    transition: background .15s, border-color .15s, color .15s;
+  }
+
+  .toggle input:checked + label.setor {
+    background: rgba(34,197,94,0.1);
+    border-color: rgba(34,197,94,0.4);
+    color: var(--green);
+  }
+
+  .toggle input:checked + label.tarik {
+    background: rgba(244,63,94,0.1);
+    border-color: rgba(244,63,94,0.4);
+    color: var(--red);
+  }
+
+  button {
+    width: 100%;
+    padding: 13px;
+    margin-top: 18px;
+    background: linear-gradient(135deg, var(--blue), var(--purple));
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    font-size: 0.88rem;
+    font-weight: 800;
+    font-family: inherit;
+    cursor: pointer;
+    letter-spacing: 0.2px;
+    transition: transform .12s;
+  }
+
+  button:active { transform: scale(0.98); }
+
+  .btn-cancel {
+    background: rgba(255,255,255,0.1);
+    color: var(--text);
+    display: none;
+    margin-top: 10px;
+  }
+
+  .pesan {
+    margin-top: 12px;
+    padding: 11px 13px;
+    border-radius: 10px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    display: none;
+  }
+
+  .pesan.sukses { display: block; background: rgba(34,197,94,0.1); color: var(--green); border: 1px solid rgba(34,197,94,0.25); }
+  .pesan.error { display: block; background: rgba(244,63,94,0.1); color: var(--red); border: 1px solid rgba(244,63,94,0.25); }
+
+  .riwayat-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .riwayat-header .card-title { margin-bottom: 0; }
+
+  .header-actions { display: flex; gap: 6px; }
+
+  .btn-action {
+    width: auto;
+    padding: 7px 11px;
+    margin: 0;
+    font-size: 0.68rem;
+    border-radius: 9px;
+    box-shadow: none;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .btn-pdf { background: rgba(34,197,94,0.1); color: var(--green); border: 1px solid rgba(34,197,94,0.25); }
+  .btn-danger { background: rgba(244,63,94,0.1); color: var(--red); border: 1px solid rgba(244,63,94,0.25); }
+
+  .riwayat-list {
+    max-height: 450px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    contain: content;
+  }
+
+  .riwayat-list::-webkit-scrollbar { width: 4px; }
+  .riwayat-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 99px; }
+
+  .transaksi-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .transaksi-item:last-child { border-bottom: none; }
+
+  .transaksi-left { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }
+
+  .avatar {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    display: grid; place-items: center;
+    font-size: 0.95rem;
+    flex-shrink: 0;
+  }
+
+  .avatar.setor { background: rgba(34,197,94,0.12); }
+  .avatar.tarik { background: rgba(244,63,94,0.12); }
+
+  .transaksi-info { min-width: 0; flex: 1; }
+  .transaksi-ket {
+    font-size: 0.83rem;
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .transaksi-meta {
+    font-size: 0.63rem;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  .transaksi-right { display: flex; align-items: center; gap: 8px; margin-left: 8px; flex-shrink: 0; }
+  
+  .transaksi-jumlah { font-size: 0.86rem; font-weight: 800; white-space: nowrap; }
+  .jumlah-setor { color: var(--green); }
+  .jumlah-tarik { color: var(--red); }
+
+  .btn-edit {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    width: 28px; height: 28px;
+    border-radius: 8px;
+    display: grid; place-items: center;
+    cursor: pointer;
+    font-size: 0.7rem;
+    padding: 0;
+    margin: 0;
+    box-shadow: none;
+  }
+  .btn-edit:active { background: rgba(255,255,255,0.1); }
+
+  .empty {
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.78rem;
+    padding: 26px 0;
+  }
+
+  .empty span { font-size: 1.8rem; display: block; margin-bottom: 6px; opacity: 0.5; }
+
+  @media (max-width: 380px) {
+    .stat-value { font-size: 0.78rem; }
+    .stat-label { font-size: 0.56rem; }
+    .transaksi-jumlah { font-size: 0.8rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <div class="logo">💰</div>
+    <div>
+      <h1>Takis v1</h1>
+      <!-- KODE VERSI DI SUBTITLE -->
+      <p>Pencatatan kas harian · Build 1.0</p>
+    </div>
+  </div>
+  <!-- KODE VERSI DI BADGE -->
+  <div class="badge">● V1.0.0</div>
+</header>
+
+<main>
+  <section class="stats">
+    <div class="stat-card s1">
+      <span class="stat-icon">📥</span>
+      <span class="stat-label">Total Setoran</span>
+      <span class="stat-value" id="totalSetor">Rp 0</span>
+    </div>
+    <div class="stat-card s2">
+      <span class="stat-icon">📤</span>
+      <span class="stat-label">Total Tarik</span>
+      <span class="stat-value" id="totalTarik">Rp 0</span>
+    </div>
+    <div class="stat-card s3">
+      <span class="stat-icon">💼</span>
+      <span class="stat-label">Saldo Kas</span>
+      <span class="stat-value" id="saldoKas">Rp 0</span>
+    </div>
+  </section>
+
+  <section class="card" id="formCard">
+    <div class="card-title">
+      <span class="dot"></span> <span id="formTitle">Transaksi Baru</span>
+      <span class="edit-indicator" id="editInd">Mode Edit</span>
+    </div>
+    <form id="formTransaksi">
+      <input type="hidden" id="editId">
+
+      <label>Keterangan</label>
+      <input type="text" id="ket" placeholder="Contoh: Setoran awal / Beli pulsa" required>
+
+      <label>Tanggal Transaksi</label>
+      <input type="date" id="tanggal" required>
+
+      <label>Jenis Transaksi</label>
+      <div class="toggle">
+        <input type="radio" name="jenis" id="jSetor" value="setor" checked>
+        <label for="jSetor" class="setor">📥 Setor</label>
+        <input type="radio" name="jenis" id="jTarik" value="tarik">
+        <label for="jTarik" class="tarik">📤 Tarik</label>
+      </div>
+
+      <label>Jumlah (Rp)</label>
+      <div class="input-rupiah">
+        <span class="prefix">Rp</span>
+        <input type="text" id="jumlah" placeholder="0" inputmode="numeric" autocomplete="off" required>
+      </div>
+
+      <button type="submit" id="btnSubmit">Simpan Transaksi</button>
+      <button type="button" id="btnCancel" class="btn-cancel">Batal Edit</button>
+    </form>
+    <div id="pesan" class="pesan"></div>
+  </section>
+
+  <section class="card">
+    <div class="riwayat-header">
+      <div class="card-title"><span class="dot"></span> Riwayat</div>
+      <div class="header-actions">
+        <button type="button" id="btnPdf" class="btn-action btn-pdf">🖼️ PDF Gambar</button>
+        <button type="button" id="btnHapus" class="btn-action btn-danger">Hapus</button>
+      </div>
+    </div>
+    <div id="riwayatList" class="riwayat-list">
+      <div class="empty"><span>📭</span>Belum ada transaksi.</div>
+    </div>
+  </section>
+</main>
+
+<script>
+  // Konfigurasi Versi
+  const APP_VERSION = '1.0.0';
+
+  // Inisialisasi data
+  let transaksi = JSON.parse(localStorage.getItem('transaksi')) || [];
+
+  // Elemen DOM
+  const form = document.getElementById('formTransaksi');
+  const riwayatList = document.getElementById('riwayatList');
+  const pesan = document.getElementById('pesan');
+  const btnHapus = document.getElementById('btnHapus');
+  const btnPdf = document.getElementById('btnPdf');
+  const btnCancel = document.getElementById('btnCancel');
+  const btnSubmit = document.getElementById('btnSubmit');
+  const inputJumlah = document.getElementById('jumlah');
+  const inputTanggal = document.getElementById('tanggal');
+  const inputKet = document.getElementById('ket');
+  const inputEditId = document.getElementById('editId');
+  const formCard = document.getElementById('formCard');
+  const formTitle = document.getElementById('formTitle');
+  const editInd = document.getElementById('editInd');
+  
+  const totalSetorEl = document.getElementById('totalSetor');
+  const totalTarikEl = document.getElementById('totalTarik');
+  const saldoKasEl = document.getElementById('saldoKas');
+
+  // Set default tanggal hari ini
+  const today = new Date().toISOString().split('T')[0];
+  inputTanggal.value = today;
+
+  // Format Angka
+  function formatRupiah(angka) {
+    return 'Rp ' + angka.toLocaleString('id-ID');
+  }
+
+  function formatAngkaInput(value) {
+    const digits = value.replace(/\D/g, '');
+    if (!digits) return '';
+    const trimmed = digits.slice(0, 15);
+    return parseInt(trimmed, 10).toLocaleString('id-ID');
+  }
+
+  function getNilaiJumlah() {
+    const digits = inputJumlah.value.replace(/\D/g, '');
+    return digits ? parseInt(digits, 10) : 0;
+  }
+
+  inputJumlah.addEventListener('input', (e) => {
+    const posisiKursor = e.target.selectionStart;
+    const panjangSebelum = e.target.value.length;
+    e.target.value = formatAngkaInput(e.target.value);
+    const panjangSesudah = e.target.value.length;
+    const selisih = panjangSesudah - panjangSebelum;
+    const posisiBaru = Math.max(0, posisiKursor + selisih);
+    e.target.setSelectionRange(posisiBaru, posisiBaru);
+  });
+
+  inputJumlah.addEventListener('keydown', (e) => {
+    const allowed = ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab', 'Home', 'End'];
+    if (allowed.includes(e.key)) return;
+    if (!/^\d$/.test(e.key) && !e.ctrlKey && !e.metaKey) {
+      e.preventDefault();
+    }
+  });
+
+  function simpanStorage() {
+    localStorage.setItem('transaksi', JSON.stringify(transaksi));
+  }
+
+  function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  // Render Data
+  function render() {
+    let totalSetor = 0, totalTarik = 0;
+    for (let i = 0; i < transaksi.length; i++) {
+      const t = transaksi[i];
+      if (t.jenis === 'setor') totalSetor += t.jumlah;
+      else totalTarik += t.jumlah;
+    }
+
+    totalSetorEl.textContent = formatRupiah(totalSetor);
+    totalTarikEl.textContent = formatRupiah(totalTarik);
+    saldoKasEl.textContent = formatRupiah(totalSetor - totalTarik);
+
+    if (transaksi.length === 0) {
+      riwayatList.innerHTML = '<div class="empty"><span>📭</span>Belum ada transaksi.</div>';
+      return;
+    }
+
+    // Urutkan berdasarkan tanggal (terbaru di atas)
+    const sorted = [...transaksi].sort((a, b) => new Date(b.tanggal) - new Date(a.tanggal));
+
+    let html = '';
+    for (let i = 0; i < sorted.length; i++) {
+      const t = sorted[i];
+      
+      // Format tanggal
+      const opsiTgl = { day: '2-digit', month: 'short', year: 'numeric' };
+      const tglFormat = new Date(t.tanggal).toLocaleDateString('id-ID', opsiTgl);
+      
+      const kelas = t.jenis === 'setor' ? 'setor' : 'tarik';
+      const tanda = t.jenis === 'setor' ? '+' : '-';
+      const ikon = t.jenis === 'setor' ? '📥' : '📤';
+
+      html += '<div class="transaksi-item">' +
+        '<div class="transaksi-left">' +
+          '<div class="avatar ' + kelas + '">' + ikon + '</div>' +
+          '<div class="transaksi-info">' +
+            '<div class="transaksi-ket">' + escapeHtml(t.ket) + '</div>' +
+            '<div class="transaksi-meta">' + tglFormat + '</div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="transaksi-right">' +
+          '<div class="transaksi-jumlah jumlah-' + kelas + '">' +
+            tanda + formatRupiah(t.jumlah) +
+          '</div>' +
+          '<button class="btn-edit" onclick="editData(' + t.id + ')">✏️</button>' +
+        '</div>' +
+      '</div>';
+    }
+    riwayatList.innerHTML = html;
+  }
+
+  function tampilPesan(teks, tipe) {
+    pesan.textContent = teks;
+    pesan.className = 'pesan ' + tipe;
+    clearTimeout(tampilPesan._timer);
+    tampilPesan._timer = setTimeout(() => { pesan.className = 'pesan'; }, 3000);
+  }
+
+  // Submit Form (Tambah / Edit)
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    const ket = inputKet.value.trim();
+    const tanggal = inputTanggal.value;
+    const jenis = document.querySelector('input[name="jenis"]:checked').value;
+    const jumlah = getNilaiJumlah();
+    const editId = inputEditId.value;
+
+    if (!ket) return tampilPesan('Keterangan wajib diisi.', 'error');
+    if (!tanggal) return tampilPesan('Tanggal wajib diisi.', 'error');
+    if (!jumlah || jumlah < 1000) return tampilPesan('Jumlah minimal Rp 1.000.', 'error');
+
+    // Validasi saldo jika transaksi baru berjenis 'tarik'
+    if (!editId && jenis === 'tarik') {
+      let ts = 0, tt = 0;
+      for (let i = 0; i < transaksi.length; i++) {
+        if (transaksi[i].jenis === 'setor') ts += transaksi[i].jumlah;
+        else tt += transaksi[i].jumlah;
+      }
+      const saldo = ts - tt;
+      if (jumlah > saldo) {
+        return tampilPesan('Saldo kas tidak cukup. Saldo: ' + formatRupiah(saldo), 'error');
+      }
+    }
+
+    if (editId) {
+      // Mode Edit
+      const index = transaksi.findIndex(t => t.id == editId);
+      if (index !== -1) {
+        transaksi[index] = {
+          ...transaksi[index],
+          ket, tanggal, jenis, jumlah
+        };
+        tampilPesan('✅ Transaksi berhasil diperbarui.', 'sukses');
+      }
+      resetForm();
+    } else {
+      // Mode Tambah
+      transaksi.push({
+        id: Date.now(),
+        ket, tanggal, jenis, jumlah
+      });
+      tampilPesan((jenis === 'setor' ? '✅ Setoran ' : '✅ Penarikan ') + formatRupiah(jumlah) + ' berhasil dicatat.', 'sukses');
+      form.reset();
+      inputTanggal.value = today;
+      document.getElementById('jSetor').checked = true;
+    }
+
+    simpanStorage();
+    render();
+  });
+
+  // Fungsi Edit Data
+  window.editData = function(id) {
+    const t = transaksi.find(item => item.id === id);
+    if (!t) return;
+
+    inputEditId.value = t.id;
+    inputKet.value = t.ket;
+    inputTanggal.value = t.tanggal;
+    inputJumlah.value = t.jumlah.toLocaleString('id-ID');
+    
+    if (t.jenis === 'setor') document.getElementById('jSetor').checked = true;
+    else document.getElementById('jTarik').checked = true;
+
+    // Ubah UI Form ke Mode Edit
+    formTitle.textContent = 'Edit Transaksi';
+    editInd.style.display = 'block';
+    btnSubmit.textContent = 'Simpan Perubahan';
+    btnCancel.style.display = 'block';
+    
+    formCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    inputKet.focus();
+  };
+
+  // Batal Edit
+  btnCancel.addEventListener('click', resetForm);
+
+  function resetForm() {
+    form.reset();
+    inputEditId.value = '';
+    inputTanggal.value = today;
+    document.getElementById('jSetor').checked = true;
+    
+    formTitle.textContent = 'Transaksi Baru';
+    editInd.style.display = 'none';
+    btnSubmit.textContent = 'Simpan Transaksi';
+    btnCancel.style.display = 'none';
+  }
+
+  // Hapus Semua
+  btnHapus.addEventListener('click', () => {
+    if (transaksi.length === 0) return tampilPesan('Belum ada data untuk dihapus.', 'error');
+    if (confirm('Yakin hapus semua riwayat transaksi?')) {
+      transaksi = [];
+      simpanStorage();
+      render();
+      tampilPesan('Semua riwayat dihapus.', 'sukses');
+    }
+  });
+
+  // ===== Fitur Simpan PDF (Versi Gambar) via Canvas =====
+  btnPdf.addEventListener('click', () => {
+    if (transaksi.length === 0) return tampilPesan('Belum ada data untuk disimpan.', 'error');
+    
+    // Tampilkan loading sementara
+    const originalText = btnPdf.innerHTML;
+    btnPdf.innerHTML = '⏳ Memproses...';
+    
+    setTimeout(() => {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      
+      const width = 800;
+      const rowHeight = 60;
+      const headerHeight = 180;
+      const footerHeight = 80;
+      const totalHeight = headerHeight + (transaksi.length * rowHeight) + footerHeight;
+      
+      // Skala tinggi resolusi
+      const scale = 2;
+      canvas.width = width * scale;
+      canvas.height = totalHeight * scale;
+      ctx.scale(scale, scale);
+
+      // Background
+      ctx.fillStyle = '#161d33';
+      ctx.fillRect(0, 0, width, totalHeight);
+
+      // Header
+      ctx.fillStyle = '#4f8cff';
+      ctx.font = 'bold 28px sans-serif';
+      ctx.fillText('Laporan Takis v1', 40, 60);
+      
+      ctx.fillStyle = '#8b93b0';
+      ctx.font = '16px sans-serif';
+      const nowStr = new Date().toLocaleString('id-ID');
+      ctx.fillText('Dicetak pada: ' + nowStr + ' | Versi: ' + APP_VERSION, 40, 90);
+
+      // Ringkasan Total
+      let totalSetor = 0, totalTarik = 0;
+      transaksi.forEach(t => {
+        if (t.jenis === 'setor') totalSetor += t.jumlah;
+        else totalTarik += t.jumlah;
+      });
+
+      ctx.fillStyle = '#eef2ff';
+      ctx.font = 'bold 18px sans-serif';
+      ctx.fillText(`Total Setor: Rp ${totalSetor.toLocaleString('id-ID')}`, 40, 130);
+      ctx.fillText(`Total Tarik: Rp ${totalTarik.toLocaleString('id-ID')}`, 300, 130);
+      ctx.fillStyle = '#4f8cff';
+      ctx.fillText(`Saldo Kas: Rp ${(totalSetor - totalTarik).toLocaleString('id-ID')}`, 550, 130);
+
+      // Garis pemisah
+      ctx.beginPath();
+      ctx.moveTo(40, 160);
+      ctx.lineTo(width - 40, 160);
+      ctx.strokeStyle = '#232c47';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      // Render Baris Transaksi
+      const sorted = [...transaksi].sort((a, b) => new Date(b.tanggal) - new Date(a.tanggal));
+      let currentY = headerHeight;
+
+      sorted.forEach((t, i) => {
+        const tglFormat = new Date(t.tanggal).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
+        const label = t.jenis === 'setor' ? '📥 Setor' : '📤 Tarik';
+        const color = t.jenis === 'setor' ? '#22c55e' : '#f43f5e';
+        const tanda = t.jenis === 'setor' ? '+' : '-';
+
+        // Keterangan
+        ctx.fillStyle = '#eef2ff';
+        ctx.font = 'bold 16px sans-serif';
+        ctx.fillText(t.ket, 40, currentY);
+
+        // Tanggal & Jenis
+        ctx.fillStyle = '#8b93b0';
+        ctx.font = '14px sans-serif';
+        ctx.fillText(`${label} • ${tglFormat}`, 40, currentY + 22);
+
+        // Jumlah
+        ctx.fillStyle = color;
+        ctx.font = 'bold 18px sans-serif';
+        ctx.textAlign = 'right';
+        ctx.fillText(`${tanda} Rp ${t.jumlah.toLocaleString('id-ID')}`, width - 40, currentY + 10);
+        
+        // Reset text alignment
+        ctx.textAlign = 'left';
+
+        // Garis pemisah bawah
+        if (i < sorted.length - 1) {
+          ctx.beginPath();
+          ctx.moveTo(40, currentY + 35);
+          ctx.lineTo(width - 40, currentY + 35);
+          ctx.strokeStyle = '#232c47';
+          ctx.lineWidth = 1;
+          ctx.stroke();
+        }
+
+        currentY += rowHeight;
+      });
+
+      // Watermark / Footer
+      ctx.fillStyle = '#8b93b0';
+      ctx.font = '12px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('Dibuat dengan Aplikasi Takis v' + APP_VERSION, width / 2, totalHeight - 30);
+      ctx.textAlign = 'left';
+
+      // Convert ke Gambar & Trigger Download
+      const dataUrl = canvas.toDataURL('image/png');
+      const a = document.createElement('a');
+      a.href = dataUrl;
+      a.download = `Takis_v${APP_VERSION}_${new Date().getTime()}.png`;
+      a.click();
+
+      btnPdf.innerHTML = originalText;
+      tampilPesan('✅ Gambar Laporan berhasil disimpan (Cek Galeri/Files).', 'sukses');
+
+    }, 100);
+  });
+
+  // Init Awal
+  render();
+</script>
+
+</body>
+</html>
